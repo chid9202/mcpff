@@ -13,13 +13,13 @@ Every MCP server's tool definitions get injected into the AI's system prompt, co
 ## Install
 
 ```bash
-npm install -g mcpff
+npm install -g @chid9202/mcpff
 ```
 
 Or run without installing:
 
 ```bash
-npx mcpff
+npx @chid9202/mcpff
 ```
 
 ## Quick Start

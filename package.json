@@ -1,5 +1,5 @@
 {
-  "name": "mcpff",
+  "name": "@chid9202/mcpff",
   "version": "0.1.0",
   "description": "MCP Flip-Flop — Toggle MCP server configurations on/off across AI clients",
   "type": "module",
