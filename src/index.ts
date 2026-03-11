@@ -9,6 +9,7 @@ import { workspaceCommand } from './commands/workspace.js';
 import { statusCommand } from './commands/status.js';
 import { backupCommand, backupListCommand } from './commands/backup.js';
 import { restoreCommand } from './commands/restore.js';
+import { pathsCommand } from './commands/paths.js';
 import { runInteractive } from './commands/interactive.js';
 
 const program = new Command();
@@ -27,6 +28,7 @@ program.addCommand(statusCommand);
 program.addCommand(backupCommand);
 program.addCommand(backupListCommand);
 program.addCommand(restoreCommand);
+program.addCommand(pathsCommand);
 
 // Default to interactive mode if no command given (TTY), else list
 program.action(async () => {
