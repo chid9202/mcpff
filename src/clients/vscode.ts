@@ -49,9 +49,17 @@ export class VscodeClient implements McpClient {
     return join(this.settingsDir, 'settings.json');
   }
 
+  /** Dedicated user-level mcp.json (VS Code 1.99+) */
+  private get mcpJsonPath(): string {
+    return join(this.settingsDir, 'mcp.json');
+  }
+
   getConfigPath(scope: string): string {
     if (scope === 'user') {
       return this.settingsPath;
+    }
+    if (scope === 'user-mcp') {
+      return this.mcpJsonPath;
     }
     if (scope.startsWith('project: ')) {
       const projectPath = scope.replace('project: ', '');
@@ -68,6 +76,7 @@ export class VscodeClient implements McpClient {
       return settings?.mcp?.servers ?? {};
     }
 
+    // user-mcp and project scopes both use { "servers": { ... } }
     const mcpJson = await readJsonFile<VscodeMcpJson>(configPath);
     return mcpJson?.servers ?? {};
   }
@@ -83,6 +92,7 @@ export class VscodeClient implements McpClient {
       return;
     }
 
+    // user-mcp and project scopes both use { "servers": { ... } }
     const mcpJson = await readJsonFile<VscodeMcpJson>(configPath) ?? {};
     mcpJson.servers = servers;
     await writeJsonFile(configPath, mcpJson);
@@ -91,10 +101,30 @@ export class VscodeClient implements McpClient {
   async discover(): Promise<McpServer[]> {
     const servers: McpServer[] = [];
 
+    // 1. Dedicated mcp.json (VS Code 1.99+)
+    if (await fileExists(this.mcpJsonPath)) {
+      const mcpJson = await readJsonFile<VscodeMcpJson>(this.mcpJsonPath);
+      if (mcpJson?.servers) {
+        for (const [name, serverConfig] of Object.entries(mcpJson.servers)) {
+          servers.push({
+            name,
+            client: this.name,
+            scope: 'user-mcp',
+            config: serverConfig,
+            enabled: true,
+            configPath: this.mcpJsonPath,
+          });
+        }
+      }
+    }
+
+    // 2. settings.json (mcp.servers key)
     if (await fileExists(this.settingsPath)) {
       const settings = await readJsonFile<VscodeSettings>(this.settingsPath);
       if (settings?.mcp?.servers) {
         for (const [name, serverConfig] of Object.entries(settings.mcp.servers)) {
+          // Skip if already found in mcp.json (avoid duplicates)
+          if (servers.some(s => s.name === name)) continue;
           servers.push({
             name,
             client: this.name,

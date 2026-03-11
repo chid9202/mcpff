@@ -49,9 +49,17 @@ export class AntigravityClient implements McpClient {
     return join(this.settingsDir, 'settings.json');
   }
 
+  /** Dedicated user-level mcp.json */
+  private get mcpJsonPath(): string {
+    return join(this.settingsDir, 'mcp.json');
+  }
+
   getConfigPath(scope: string): string {
     if (scope === 'user') {
       return this.settingsPath;
+    }
+    if (scope === 'user-mcp') {
+      return this.mcpJsonPath;
     }
     if (scope.startsWith('project: ')) {
       const projectPath = scope.replace('project: ', '');
@@ -68,7 +76,6 @@ export class AntigravityClient implements McpClient {
       return settings?.mcp?.servers ?? {};
     }
 
-    // Project scope: .vscode/mcp.json
     const mcpJson = await readJsonFile<VscodeMcpJson>(configPath);
     return mcpJson?.servers ?? {};
   }
@@ -84,7 +91,6 @@ export class AntigravityClient implements McpClient {
       return;
     }
 
-    // Project scope: .vscode/mcp.json
     const mcpJson = await readJsonFile<VscodeMcpJson>(configPath) ?? {};
     mcpJson.servers = servers;
     await writeJsonFile(configPath, mcpJson);
@@ -93,11 +99,29 @@ export class AntigravityClient implements McpClient {
   async discover(): Promise<McpServer[]> {
     const servers: McpServer[] = [];
 
-    // User-level settings.json
+    // 1. Dedicated mcp.json
+    if (await fileExists(this.mcpJsonPath)) {
+      const mcpJson = await readJsonFile<VscodeMcpJson>(this.mcpJsonPath);
+      if (mcpJson?.servers) {
+        for (const [name, serverConfig] of Object.entries(mcpJson.servers)) {
+          servers.push({
+            name,
+            client: this.name,
+            scope: 'user-mcp',
+            config: serverConfig,
+            enabled: true,
+            configPath: this.mcpJsonPath,
+          });
+        }
+      }
+    }
+
+    // 2. settings.json (mcp.servers key)
     if (await fileExists(this.settingsPath)) {
       const settings = await readJsonFile<AntigravitySettings>(this.settingsPath);
       if (settings?.mcp?.servers) {
         for (const [name, serverConfig] of Object.entries(settings.mcp.servers)) {
+          if (servers.some(s => s.name === name)) continue;
           servers.push({
             name,
             client: this.name,
