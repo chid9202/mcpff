@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import { listCommand } from './commands/list.js';
 import { onCommand } from './commands/on.js';
 import { offCommand } from './commands/off.js';
@@ -12,12 +15,15 @@ import { restoreCommand } from './commands/restore.js';
 import { pathsCommand } from './commands/paths.js';
 import { runInteractive } from './commands/interactive.js';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'));
+
 const program = new Command();
 
 program
   .name('mcpff')
   .description('MCP Flip-Flop — Toggle MCP server configs on/off across AI clients')
-  .version('0.1.0');
+  .version(pkg.version);
 
 program.addCommand(listCommand);
 program.addCommand(onCommand);
