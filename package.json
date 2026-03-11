@@ -1,6 +1,6 @@
 {
   "name": "@chid9202/mcpff",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP Flip-Flop — Toggle MCP server configurations on/off across AI clients",
   "type": "module",
   "bin": {
