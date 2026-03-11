@@ -22,12 +22,72 @@ export async function atomicWriteFile(filePath: string, data: string): Promise<v
 }
 
 /**
+ * Strip JSON comments (// and /* ... *​/) and trailing commas.
+ * Handles comments inside strings correctly.
+ */
+function stripJsonComments(text: string): string {
+  let result = '';
+  let i = 0;
+  let inString = false;
+  let escape = false;
+
+  while (i < text.length) {
+    const ch = text[i];
+    const next = text[i + 1];
+
+    if (inString) {
+      result += ch;
+      if (escape) {
+        escape = false;
+      } else if (ch === '\\') {
+        escape = true;
+      } else if (ch === '"') {
+        inString = false;
+      }
+      i++;
+      continue;
+    }
+
+    // Start of string
+    if (ch === '"') {
+      inString = true;
+      result += ch;
+      i++;
+      continue;
+    }
+
+    // Line comment
+    if (ch === '/' && next === '/') {
+      // Skip until end of line
+      i += 2;
+      while (i < text.length && text[i] !== '\n') i++;
+      continue;
+    }
+
+    // Block comment
+    if (ch === '/' && next === '*') {
+      i += 2;
+      while (i < text.length && !(text[i] === '*' && text[i + 1] === '/')) i++;
+      i += 2; // skip closing */
+      continue;
+    }
+
+    result += ch;
+    i++;
+  }
+
+  // Remove trailing commas before } or ]
+  return result.replace(/,\s*([}\]])/g, '$1');
+}
+
+/**
  * Safely read a JSON file. Returns null if file doesn't exist.
+ * Supports JSONC (comments + trailing commas) for VS Code compatibility.
  */
 export async function readJsonFile<T = unknown>(filePath: string): Promise<T | null> {
   try {
     const content = await readFile(filePath, 'utf-8');
-    return JSON.parse(content) as T;
+    return JSON.parse(stripJsonComments(content)) as T;
   } catch (err: unknown) {
     if (err instanceof Error && 'code' in err && (err as NodeJS.ErrnoException).code === 'ENOENT') {
       return null;
