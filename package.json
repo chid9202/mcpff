@@ -6,9 +6,15 @@
   "bin": {
     "mcpff": "./dist/index.js"
   },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
+    "prepublishOnly": "npm run build",
     "start": "node dist/index.js",
     "test": "echo \"No tests yet\" && exit 0"
   },
@@ -19,10 +25,20 @@
     "toggle",
     "claude",
     "cursor",
+    "codex",
+    "gemini",
+    "vscode",
+    "windsurf",
+    "openclaw",
     "ai"
   ],
-  "author": "",
+  "author": "Daehan Chi",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chid9202/mcpff.git"
+  },
+  "homepage": "https://github.com/chid9202/mcpff#readme",
   "dependencies": {
     "chalk": "^5.4.1",
     "commander": "^13.1.0",
