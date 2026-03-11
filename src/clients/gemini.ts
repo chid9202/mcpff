@@ -1,63 +1,38 @@
-import { join } from 'node:path';
-import { homedir } from 'node:os';
-import { readJsonFile, writeJsonFile, fileExists } from '../utils/fs.js';
 import type { McpClient, McpServer, McpServerConfig } from './base.js';
 
 /**
- * Gemini CLI — stores MCP servers in ~/.gemini/settings.json
+ * Gemini CLI — uses an extensions system for MCP, not a simple config file.
  *
- * Format:
- *   {
- *     "mcpServers": {
- *       "<name>": { "command": "...", "args": [...], "env": {...} }
- *     }
- *   }
+ * Gemini CLI manages MCP servers through its extensions framework
+ * (gemini extensions install/list). There is no single JSON/TOML config
+ * file that maps MCP server names to commands like other clients.
+ *
+ * This client is a placeholder — Gemini CLI MCP discovery is not yet
+ * supported. If/when Gemini CLI exposes a flat config file for MCP
+ * servers, this adapter can be implemented.
  */
-
-interface GeminiConfig {
-  mcpServers?: Record<string, McpServerConfig>;
-  [key: string]: unknown;
-}
-
 export class GeminiClient implements McpClient {
   name = 'gemini';
 
-  private get configPath(): string {
-    return join(homedir(), '.gemini', 'settings.json');
-  }
-
   getConfigPath(_scope: string): string {
-    return this.configPath;
+    return '';
   }
 
   async readServers(_scope: string): Promise<Record<string, McpServerConfig>> {
-    const config = await readJsonFile<GeminiConfig>(this.configPath);
-    return config?.mcpServers ?? {};
+    return {};
   }
 
-  async writeServers(_scope: string, servers: Record<string, McpServerConfig>): Promise<void> {
-    const config = await readJsonFile<GeminiConfig>(this.configPath) ?? {};
-    config.mcpServers = servers;
-    await writeJsonFile(this.configPath, config);
+  async writeServers(_scope: string, _servers: Record<string, McpServerConfig>): Promise<void> {
+    // Not supported — Gemini CLI uses extensions, not a flat config
   }
 
   async discover(): Promise<McpServer[]> {
-    if (!(await fileExists(this.configPath))) return [];
-
-    const config = await readJsonFile<GeminiConfig>(this.configPath);
-    if (!config?.mcpServers) return [];
-
-    return Object.entries(config.mcpServers).map(([name, serverConfig]) => ({
-      name,
-      client: this.name,
-      scope: 'user',
-      config: serverConfig,
-      enabled: true,
-      configPath: this.configPath,
-    }));
+    // Gemini CLI uses an extensions system for MCP.
+    // No flat config file to discover from.
+    return [];
   }
 
   async reload(): Promise<void> {
-    // Gemini CLI picks up config changes on next run
+    // N/A
   }
 }

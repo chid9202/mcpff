@@ -171,17 +171,18 @@ mcpff restore 2026-03-10T15-44  # Restore from a specific backup
 
 ## Supported Clients
 
-| Client | Config Location | Scope |
-|--------|----------------|-------|
-| **Claude Code** | `~/.claude.json`, `<project>/.mcp.json` | User, per-project, shared project |
-| **Claude Desktop** | `~/Library/.../Claude/claude_desktop_config.json` | Global |
-| **Cursor** | `~/.cursor/mcp.json`, `<project>/.cursor/mcp.json` | User, per-project |
-| **Codex** (OpenAI) | `~/.codex/config.toml` (`[mcp_servers]`) | User |
-| **Gemini CLI** | `~/.gemini/settings.json` (`mcpServers`) | User |
-| **VS Code** | `~/Library/.../Code/User/settings.json` (`mcp.servers`), `<project>/.vscode/mcp.json` | User, per-project |
-| **Antigravity** | `~/Library/.../Antigravity/User/settings.json` (`mcp.servers`), `<project>/.vscode/mcp.json` | User, per-project |
-| **Windsurf** | `~/.codeium/windsurf/mcp_config.json` | User |
-| **OpenClaw** | Auto-discovers from `~/.openclaw/openclaw.json` agent workspaces | Per-workspace |
+| Client | Config Location | Scope | Source |
+|--------|----------------|-------|--------|
+| **Claude Code** | `~/.claude.json`, `<project>/.mcp.json` | User, per-project, shared project | [docs](https://code.claude.com/docs/en/mcp) |
+| **Claude Desktop** | `~/Library/.../Claude/claude_desktop_config.json` | Global | [docs](https://modelcontextprotocol.io/docs/develop/connect-local-servers) |
+| **Cursor** | `~/.cursor/mcp.json`, `<project>/.cursor/mcp.json` | User, per-project | [docs](https://cursor.com/docs) |
+| **Codex** (OpenAI) | `~/.codex/config.toml` (`[mcp_servers]`), `.codex/config.toml` | User, per-project | [docs](https://developers.openai.com/codex/mcp) |
+| **VS Code** | `~/Library/.../Code/User/mcp.json`, `settings.json` (`mcp.servers`), `<project>/.vscode/mcp.json` | User, per-project | [docs](https://code.visualstudio.com/docs/copilot/customization/mcp-servers) |
+| **Antigravity** | `~/Library/.../Antigravity/User/mcp.json`, `settings.json` (`mcp.servers`), `<project>/.vscode/mcp.json` | User, per-project | VS Code fork |
+| **Windsurf** | `~/.codeium/windsurf/mcp_config.json` (`mcpServers`) | User | [docs](https://docs.windsurf.com/windsurf/cascade/mcp) |
+| **OpenClaw** | Auto-discovers from `~/.openclaw/openclaw.json` agent workspaces | Per-workspace | [docs](https://docs.openclaw.ai) |
+
+> **Note:** Gemini CLI uses an extensions system for MCP, not a flat config file. It is not yet supported.
 
 Config paths shown are for macOS. Linux and Windows paths are handled automatically.
 
