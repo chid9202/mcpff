@@ -39,6 +39,6 @@ export interface McpClient {
   /** Write servers to a specific scope. */
   writeServers(scope: string, servers: Record<string, McpServerConfig>): Promise<void>;
 
-  /** Phase 2 stub: reload the client to pick up config changes. */
+  /** Optional: reload the client to pick up config changes. */
   reload?(): Promise<void>;
 }

@@ -117,6 +117,6 @@ export class OpenClawClient implements McpClient {
   }
 
   async reload(): Promise<void> {
-    // Phase 2: openclaw gateway restart or config reload
+    // Reload not supported — user restarts manually
   }
 }

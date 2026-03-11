@@ -47,6 +47,6 @@ export class ClaudeDesktopClient implements McpClient {
   }
 
   async reload(): Promise<void> {
-    // Phase 2: Claude Desktop may auto-reload on file change
+    // Reload not supported — user restarts manually
   }
 }

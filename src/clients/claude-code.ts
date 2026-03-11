@@ -162,6 +162,6 @@ export class ClaudeCodeClient implements McpClient {
   }
 
   async reload(): Promise<void> {
-    // Phase 2: implement hot reload
+    // Reload not supported — user restarts manually
   }
 }

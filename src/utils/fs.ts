@@ -138,7 +138,7 @@ export function getBackupsDir(): string {
 
 /**
  * Sanitize a scope string for use as a directory name.
- * e.g. "/Users/daehanchi/Dev/UpPhish" → "--Users-daehanchi-Dev-UpPhish"
+ * e.g. "/Users/jane/Dev/MyProject" → "Users-jane-Dev-MyProject"
  */
 export function sanitizeScope(scope: string): string {
   return scope.replace(/[/\\:]/g, '-').replace(/^-+/, '').replace(/-+$/, '') || 'default';

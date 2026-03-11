@@ -85,6 +85,6 @@ export class CursorClient implements McpClient {
   }
 
   async reload(): Promise<void> {
-    // Phase 2: Cursor likely requires restart
+    // Reload not supported — user restarts manually
   }
 }
